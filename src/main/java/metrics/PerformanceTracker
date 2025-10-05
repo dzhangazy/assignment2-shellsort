@@ -1,0 +1,37 @@
+package metrics;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class PerformanceTracker {
+public long comparisons = 0;
+public long swaps = 0;
+public long reads = 0;
+public long writes = 0;
+public long durationMs = 0;
+
+```
+public void reset() {
+    comparisons = swaps = reads = writes = durationMs = 0;
+}
+
+public String toCsvRow(String algoName, String distribution, int n) {
+    return String.format("%s,%s,%d,%d,%d,%d,%d,%d",
+            algoName, distribution, n, durationMs, comparisons, swaps, reads, writes);
+}
+
+public static void writeCsvHeader(String path) throws IOException {
+    try (PrintWriter out = new PrintWriter(new FileWriter(path, false))) {
+        out.println("algorithm,distribution,n,durationMs,comparisons,swaps,reads,writes");
+    }
+}
+
+public static void appendCsvRow(String path, String row) throws IOException {
+    try (PrintWriter out = new PrintWriter(new FileWriter(path, true))) {
+        out.println(row);
+    }
+}
+```
+
+}

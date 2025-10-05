@@ -1,0 +1,35 @@
+package algorithms;
+
+import metrics.PerformanceTracker;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ShellSortTest {
+
+```
+@Test
+void testEmptyArray() {
+    ShellSort sorter = new ShellSort(ShellSort.GapSequence.SHELL);
+    int[] arr = {};
+    sorter.sort(arr, new PerformanceTracker());
+    assertArrayEquals(new int[]{}, arr);
+}
+
+@Test
+void testReverseArray() {
+    ShellSort sorter = new ShellSort(ShellSort.GapSequence.KNUTH);
+    int[] arr = {5,4,3,2,1};
+    sorter.sort(arr, new PerformanceTracker());
+    assertArrayEquals(new int[]{1,2,3,4,5}, arr);
+}
+
+@Test
+void testRandomArray() {
+    ShellSort sorter = new ShellSort(ShellSort.GapSequence.SEDGEWICK);
+    int[] arr = {9,1,8,3,7,2};
+    sorter.sort(arr, new PerformanceTracker());
+    assertArrayEquals(new int[]{1,2,3,7,8,9}, arr);
+}
+```
+
+}

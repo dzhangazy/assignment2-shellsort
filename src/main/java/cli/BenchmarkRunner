@@ -1,0 +1,61 @@
+package cli;
+
+import algorithms.ShellSort;
+import algorithms.ShellSort.GapSequence;
+import metrics.PerformanceTracker;
+
+import java.util.Random;
+
+public class BenchmarkRunner {
+private static final int[] SIZES = {100, 1000, 10000};
+private static final String CSV_PATH = "docs/perf_results.csv";
+
+```
+public static void main(String[] args) throws Exception {
+    PerformanceTracker.writeCsvHeader(CSV_PATH);
+
+    for (GapSequence seq : GapSequence.values()) {
+        for (String dist : new String[]{"random", "sorted", "reversed", "nearly-sorted"}) {
+            for (int n : SIZES) {
+                int[] arr = generateArray(n, dist);
+                PerformanceTracker tracker = new PerformanceTracker();
+                ShellSort sorter = new ShellSort(seq);
+                long start = System.currentTimeMillis();
+                sorter.sort(arr, tracker);
+                tracker.durationMs = System.currentTimeMillis() - start;
+                PerformanceTracker.appendCsvRow(CSV_PATH,
+                        tracker.toCsvRow("Shell-" + seq.name(), dist, n));
+                System.out.printf("Done: %s, %s, n=%d, time=%dms%n",
+                        seq, dist, n, tracker.durationMs);
+            }
+        }
+    }
+}
+
+private static int[] generateArray(int n, String dist) {
+    Random rnd = new Random();
+    int[] arr = new int[n];
+    switch (dist) {
+        case "sorted":
+            for (int i = 0; i < n; i++) arr[i] = i;
+            break;
+        case "reversed":
+            for (int i = 0; i < n; i++) arr[i] = n - i;
+            break;
+        case "nearly-sorted":
+            for (int i = 0; i < n; i++) arr[i] = i;
+            int swaps = Math.max(1, n / 100);
+            for (int s = 0; s < swaps; s++) {
+                int i = rnd.nextInt(n);
+                int j = rnd.nextInt(n);
+                int tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+            }
+            break;
+        default: // random
+            for (int i = 0; i < n; i++) arr[i] = rnd.nextInt(n * 10);
+    }
+    return arr;
+}
+```
+
+}

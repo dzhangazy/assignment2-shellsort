@@ -1,0 +1,96 @@
+package algorithms;
+
+import metrics.PerformanceTracker;
+
+/**
+
+* Shell Sort with different gap sequences: SHELL, KNUTH, SEDGEWICK
+  */
+  public class ShellSort {
+
+  public enum GapSequence { SHELL, KNUTH, SEDGEWICK }
+
+  private final GapSequence seq;
+
+  public ShellSort(GapSequence seq) {
+  this.seq = seq;
+  }
+
+  public void sort(int[] a, PerformanceTracker tracker) {
+  int n = a.length;
+  int[] gaps = generateGaps(n);
+
+  ```
+   for (int gap : gaps) {
+       for (int i = gap; i < n; i++) {
+           int temp = a[i];
+           tracker.reads++;
+           int j = i;
+           while (j >= gap && compare(a[j - gap], temp, tracker) > 0) {
+               a[j] = a[j - gap];
+               tracker.swaps++;
+               tracker.writes++;
+               tracker.reads++;
+               j -= gap;
+           }
+           a[j] = temp;
+           tracker.writes++;
+       }
+   }
+  ```
+
+  }
+
+  private int compare(int a, int b, PerformanceTracker tracker) {
+  tracker.comparisons++;
+  return Integer.compare(a, b);
+  }
+
+  private int[] generateGaps(int n) {
+  switch (seq) {
+  case KNUTH: return knuthGaps(n);
+  case SEDGEWICK: return sedgewickGaps(n);
+  default: return shellGaps(n);
+  }
+  }
+
+  private int[] shellGaps(int n) {
+  java.util.List<Integer> list = new java.util.ArrayList<>();
+  for (int gap = n / 2; gap > 0; gap /= 2) list.add(gap);
+  return list.stream().mapToInt(i -> i).toArray();
+  }
+
+  private int[] knuthGaps(int n) {
+  java.util.List<Integer> list = new java.util.ArrayList<>();
+  int h = 1;
+  while (h < n) h = 3 * h + 1;
+  while (h > 0) {
+  list.add(h);
+  h = (h - 1) / 3;
+  }
+  return list.stream().mapToInt(i -> i).toArray();
+  }
+
+  private int[] sedgewickGaps(int n) {
+  java.util.List<Integer> list = new java.util.ArrayList<>();
+  int k = 0;
+  while (true) {
+  int gap;
+  if (k % 2 == 0) {
+  int pow = 1 << k;
+  gap = 9 * (pow * pow) - 9 * pow + 1;
+  } else {
+  int pow1 = 1 << k;
+  int pow2 = 1 << ((k + 1) / 2);
+  gap = 8 * pow1 - 6 * pow2 + 1;
+  }
+  if (gap > n) break;
+  list.add(gap);
+  k++;
+  if (k > 30) break;
+  }
+  java.util.Collections.reverse(list);
+  if (list.isEmpty() || list.get(list.size() - 1) != 1) list.add(1);
+  return list.stream().mapToInt(i -> i).toArray();
+  }
+  }
